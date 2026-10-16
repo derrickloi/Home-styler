@@ -1,5 +1,5 @@
 import React from 'react';
-import { Hammer, Compass, Sparkles, Users, ShoppingBag } from 'lucide-react';
+import { Hammer, Compass, Sparkles, Users, ShoppingBag, MapPin } from 'lucide-react';
 
 interface MobileBottomNavProps {
   activeTab: string;
@@ -9,9 +9,9 @@ interface MobileBottomNavProps {
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeTab, setActiveTab }) => {
   const items = [
     { id: 'services', label: 'Services', icon: Hammer },
-    { id: 'onemap', label: 'OneMap', icon: Compass },
+    { id: 'recommendations', label: 'Nearest 10', icon: MapPin },
+    { id: 'contractors', label: 'Roster', icon: Users },
     { id: 'bidding', label: 'Bidding', icon: Sparkles },
-    { id: 'contractors', label: 'Contractors', icon: Users },
     { id: 'marketplace', label: 'Shop', icon: ShoppingBag },
   ];
 

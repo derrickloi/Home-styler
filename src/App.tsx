@@ -9,6 +9,7 @@ import { OneMapCard } from './components/OneMapCard';
 import { ServicesSection } from './components/ServicesSection';
 import { BiddingSystem } from './components/BiddingSystem';
 import { ContractorSection } from './components/ContractorSection';
+import { NearestContractorsTab } from './components/NearestContractorsTab';
 import { MarketplaceSection } from './components/MarketplaceSection';
 import { Footer } from './components/Footer';
 import { QuoteModal } from './components/QuoteModal';
@@ -34,14 +35,14 @@ export default function App() {
     setSelectedService('Direct Contractor Engagement');
     setDefaultMode('choose_own');
     setTargetContractor(null);
-    setQuoteModalOpen(true);
+    setActiveTab('contractors');
   };
 
   const handleOpenRecommend = () => {
     setSelectedService('Contractor Recommendation & Matching');
     setDefaultMode('recommend');
     setTargetContractor(null);
-    setQuoteModalOpen(true);
+    setActiveTab('recommendations');
   };
 
   const handleOpenQuoteWithContractor = (contractor: Contractor) => {
@@ -87,6 +88,25 @@ export default function App() {
           </>
         )}
 
+        {/* Dedicated Tab for Keying in Residential Postal Code & Getting 10 Nearest Contractors */}
+        {activeTab === 'recommendations' && (
+          <NearestContractorsTab
+            onOpenQuoteWithContractor={handleOpenQuoteWithContractor}
+          />
+        )}
+
+        {activeTab === 'contractors' && (
+          <ContractorSection 
+            onOpenQuoteWithContractor={handleOpenQuoteWithContractor}
+          />
+        )}
+
+        {activeTab === 'bidding' && (
+          <BiddingSystem 
+            onOpenNewQuote={() => setQuoteModalOpen(true)} 
+          />
+        )}
+
         {activeTab === 'onemap' && (
           <div className="space-y-6">
             <div className="bg-white rounded-2xl border border-neutral-200 p-6 shadow-xs">
@@ -108,18 +128,6 @@ export default function App() {
               </div>
             </div>
           </div>
-        )}
-
-        {activeTab === 'bidding' && (
-          <BiddingSystem 
-            onOpenNewQuote={() => setQuoteModalOpen(true)} 
-          />
-        )}
-
-        {activeTab === 'contractors' && (
-          <ContractorSection 
-            onOpenQuoteWithContractor={handleOpenQuoteWithContractor}
-          />
         )}
 
         {activeTab === 'marketplace' && (

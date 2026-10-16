@@ -1,10 +1,21 @@
 /**
  * Vercel Serverless Function: api/onemap.js
- * Fetches Singapore OneMap location data for postal code 178903 without any API key.
+ * Fetches Singapore OneMap location data for postal code 178903 (or requested postal code) without any API key.
  */
 
 export default async function handler(req, res) {
-  const url = 'https://www.onemap.gov.sg/api/common/elastic/search?searchVal=178903&returnGeom=Y&getAddrDetails=Y&pageNum=1';
+  let searchVal = '178903';
+  if (req.query && req.query.searchVal) {
+    searchVal = encodeURIComponent(String(req.query.searchVal).trim());
+  } else if (req.url) {
+    try {
+      const parsedUrl = new URL(req.url, 'http://localhost');
+      const q = parsedUrl.searchParams.get('searchVal');
+      if (q) searchVal = encodeURIComponent(q.trim());
+    } catch (_) {}
+  }
+
+  const url = `https://www.onemap.gov.sg/api/common/elastic/search?searchVal=${searchVal}&returnGeom=Y&getAddrDetails=Y&pageNum=1`;
 
   try {
     const response = await fetch(url, {
