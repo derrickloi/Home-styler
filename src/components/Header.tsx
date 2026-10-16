@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Hammer, Compass, ShoppingBag, ShieldCheck, Sparkles, Menu, X, Users, CheckCircle2 } from 'lucide-react';
+import { Home, Hammer, Compass, ShoppingBag, ShieldCheck, Sparkles, Menu, X, Users, CheckCircle2, MapPin } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: string;
@@ -12,6 +12,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, openQuo
 
   const navItems = [
     { id: 'services', label: 'Services', icon: Hammer },
+    { id: 'nearest', label: 'Nearest 10 Contractors', icon: MapPin },
     { id: 'onemap', label: 'OneMap Live', icon: Compass },
     { id: 'bidding', label: 'Bidding System', icon: Sparkles },
     { id: 'contractors', label: 'Contractor Roster', icon: Users },

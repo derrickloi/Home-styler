@@ -33,8 +33,8 @@ async function startServer() {
     app.use(vite.middlewares);
   }
 
-  app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+  app.listen(Number(PORT), '0.0.0.0', () => {
+    console.log(`Server listening on http://0.0.0.0:${PORT}`);
   });
 }
 

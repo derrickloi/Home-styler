@@ -16,8 +16,27 @@ export default async function handler(req, res) {
     return;
   }
 
-  const searchVal = '178903';
-  const targetUrl = `https://www.onemap.gov.sg/api/common/elastic/search?searchVal=${searchVal}&returnGeom=Y&getAddrDetails=Y&pageNum=1`;
+  // Extract dynamic postal or searchVal from query parameters or URL
+  let searchVal = '178903';
+  try {
+    const rawUrl = req.url || '';
+    const parsedUrl = new URL(rawUrl, 'http://localhost');
+    const qVal = parsedUrl.searchParams.get('postal') || 
+                 parsedUrl.searchParams.get('searchVal') || 
+                 parsedUrl.searchParams.get('q');
+    if (qVal && qVal.trim() !== '') {
+      searchVal = qVal.trim();
+    } else {
+      const match = rawUrl.match(/searchVal=([A-Za-z0-9%_-]+)/i);
+      if (match && match[1]) {
+        searchVal = decodeURIComponent(match[1]);
+      }
+    }
+  } catch {
+    searchVal = '178903';
+  }
+
+  const targetUrl = `https://www.onemap.gov.sg/api/common/elastic/search?searchVal=${encodeURIComponent(searchVal)}&returnGeom=Y&getAddrDetails=Y&pageNum=1`;
 
   const headers = {
     'Accept': 'application/json',

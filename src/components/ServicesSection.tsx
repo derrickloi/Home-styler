@@ -16,18 +16,23 @@ import {
   Building,
   DollarSign
 } from 'lucide-react';
-import { RenovationService } from '../types';
+import { RenovationService, Contractor } from '../types';
+import { ServicePathOneRecommender } from './ServicePathOneRecommender';
 
 interface ServicesSectionProps {
   onSelectService: (serviceTitle: string) => void;
   onOpenDirectChoose: () => void;
   onOpenRecommend: () => void;
+  onOpenQuoteWithContractor?: (contractor: Contractor) => void;
+  onNavigateToNearest?: () => void;
 }
 
 export const ServicesSection: React.FC<ServicesSectionProps> = ({ 
   onSelectService,
   onOpenDirectChoose,
-  onOpenRecommend 
+  onOpenRecommend,
+  onOpenQuoteWithContractor,
+  onNavigateToNearest
 }) => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
@@ -199,25 +204,35 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {/* Option 1: Owners choose their own contractors */}
             <div 
-              onClick={onOpenDirectChoose}
-              className="bg-white/95 backdrop-blur-sm p-4 sm:p-5 rounded-xl border border-amber-600/20 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99]"
+              onClick={() => {
+                const el = document.getElementById('service-path-1-interactive-tabs');
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                  onOpenDirectChoose();
+                }
+              }}
+              className="bg-white/95 backdrop-blur-sm p-4 sm:p-5 rounded-xl border-2 border-neutral-900 shadow-xs hover:shadow-md transition-all cursor-pointer group active:scale-[0.99]"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded">
+                <span className="text-xs font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-amber-600" />
                   Service Path 1
                 </span>
-                <ArrowRight className="w-4 h-4 text-neutral-500 group-hover:translate-x-1 group-hover:text-neutral-950 transition-all" />
+                <span className="text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                  Interactive Tabs Active ↓
+                </span>
               </div>
-              <h2 className="text-base sm:text-lg font-bold text-neutral-950">
+              <h2 className="text-base sm:text-lg font-bold text-neutral-950 font-display">
                 1. Owners Choose Their Own Contractors
               </h2>
               <p className="text-xs text-neutral-600 mt-1">
-                Browse trade capabilities directly, review itemized BOQs, and hire directly to bypass middleman commission fees.
+                Browse trade capabilities directly, review itemized BOQs, and get verified recommendations after choosing your renovation type below.
               </p>
-              <button className="mt-3 text-xs font-bold text-neutral-900 flex items-center gap-1 group-hover:text-amber-700">
-                <span>Select Direct Mode</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+              <div className="mt-3 text-xs font-bold text-neutral-900 flex items-center gap-1 group-hover:text-amber-700">
+                <span>Choose Renovation Type &amp; View Recommendations</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </div>
             </div>
 
             {/* Option 2: Owners prefer recommendation */}
@@ -231,19 +246,28 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
                 </span>
                 <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition-all" />
               </div>
-              <h2 className="text-base sm:text-lg font-bold text-white">
+              <h2 className="text-base sm:text-lg font-bold text-white font-display">
                 2. Owners Prefer Recommendation
               </h2>
               <p className="text-xs text-neutral-300 mt-1">
                 Tell us your property type &amp; requirements to receive curated recommendations and competing bids from accredited firms.
               </p>
-              <button className="mt-3 text-xs font-bold text-amber-400 flex items-center gap-1 group-hover:text-amber-300">
+              <div className="mt-3 text-xs font-bold text-amber-400 flex items-center gap-1 group-hover:text-amber-300">
                 <span>Get Recommended</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Service Path 1: Interactive Tab & Recommendation Engine */}
+      <div id="service-path-1-interactive-tabs">
+        <ServicePathOneRecommender 
+          onOpenQuoteWithContractor={onOpenQuoteWithContractor}
+          onRequestQuoteForType={onSelectService}
+          onNavigateToNearest={onNavigateToNearest}
+        />
       </div>
 
       {/* Section Header with Category Chips (Phone scrollable) */}

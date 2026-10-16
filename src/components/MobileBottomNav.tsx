@@ -1,5 +1,5 @@
 import React from 'react';
-import { Hammer, Compass, Sparkles, Users, ShoppingBag } from 'lucide-react';
+import { Hammer, Compass, Sparkles, Users, ShoppingBag, MapPin } from 'lucide-react';
 
 interface MobileBottomNavProps {
   activeTab: string;
@@ -9,15 +9,16 @@ interface MobileBottomNavProps {
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeTab, setActiveTab }) => {
   const items = [
     { id: 'services', label: 'Services', icon: Hammer },
+    { id: 'nearest', label: 'Nearest', icon: MapPin },
     { id: 'onemap', label: 'OneMap', icon: Compass },
     { id: 'bidding', label: 'Bidding', icon: Sparkles },
-    { id: 'contractors', label: 'Contractors', icon: Users },
+    { id: 'contractors', label: 'Roster', icon: Users },
     { id: 'marketplace', label: 'Shop', icon: ShoppingBag },
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-neutral-200 px-2 py-1.5 shadow-lg safe-area-pb">
-      <div className="grid grid-cols-5 gap-1">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-neutral-200 px-1.5 py-1.5 shadow-lg safe-area-pb">
+      <div className="grid grid-cols-6 gap-0.5">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;

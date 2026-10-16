@@ -15,7 +15,11 @@ import {
 } from 'lucide-react';
 import { useOneMapData, EXACT_ONEMAP_ENDPOINT } from '../hooks/useOneMapData';
 
-export const OneMapCard: React.FC = () => {
+interface OneMapCardProps {
+  onNavigateToNearest?: () => void;
+}
+
+export const OneMapCard: React.FC<OneMapCardProps> = ({ onNavigateToNearest }) => {
   const {
     status,
     data,
@@ -53,11 +57,21 @@ export const OneMapCard: React.FC = () => {
         </div>
 
         {/* Refresh & status badge */}
-        <div className="flex items-center gap-2 self-start sm:self-auto">
+        <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+          {onNavigateToNearest && (
+            <button
+              onClick={onNavigateToNearest}
+              className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-neutral-950 transition-all shadow-xs cursor-pointer active:scale-95"
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              <span>Find 10 Nearest Contractors</span>
+            </button>
+          )}
+
           <button
             onClick={() => refetch()}
             disabled={isLoading}
-            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 active:scale-95 text-neutral-200 border border-neutral-700 transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 active:scale-95 text-neutral-200 border border-neutral-700 transition-all disabled:opacity-50 cursor-pointer"
             title="Fetch live from OneMap API"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-amber-400' : ''}`} />

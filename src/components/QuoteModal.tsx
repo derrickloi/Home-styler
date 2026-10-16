@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Sparkles, CheckCircle2, Building2, MapPin, DollarSign, Calendar, ShieldCheck, Hammer } from 'lucide-react';
 import { Contractor } from '../types';
 
@@ -31,6 +31,15 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
   const [timeline, setTimeline] = useState('Within 2-3 Months');
   const [scopeDetails, setScopeDetails] = useState('');
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setService(defaultService);
+      setEngagementMode(targetContractor ? 'choose_own' : (defaultMode === 'choose_own' ? 'choose_own' : 'recommend'));
+      setPostal(defaultPostal);
+      setSubmitted(false);
+    }
+  }, [isOpen, defaultService, defaultMode, targetContractor, defaultPostal]);
 
   if (!isOpen) return null;
 

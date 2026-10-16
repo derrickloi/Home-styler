@@ -10,6 +10,7 @@ import { ServicesSection } from './components/ServicesSection';
 import { BiddingSystem } from './components/BiddingSystem';
 import { ContractorSection } from './components/ContractorSection';
 import { MarketplaceSection } from './components/MarketplaceSection';
+import { NearestContractorsTab } from './components/NearestContractorsTab';
 import { Footer } from './components/Footer';
 import { QuoteModal } from './components/QuoteModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
@@ -22,6 +23,8 @@ export default function App() {
   const [selectedService, setSelectedService] = useState<string>('Full Home Renovation');
   const [defaultMode, setDefaultMode] = useState<'choose_own' | 'recommend' | 'general'>('general');
   const [targetContractor, setTargetContractor] = useState<Contractor | null>(null);
+  const [userPostal, setUserPostal] = useState<string>('178903');
+  const [userBuilding, setUserBuilding] = useState<string>('SMU SCHOOL OF ECONOMICS / COMPUTING & INFORMATION SYSTEM 2');
 
   const handleSelectService = (serviceTitle: string) => {
     setSelectedService(serviceTitle);
@@ -51,6 +54,15 @@ export default function App() {
     setQuoteModalOpen(true);
   };
 
+  const handleRequestQuoteWithPostal = (postalCode: string, buildingName: string) => {
+    setUserPostal(postalCode);
+    setUserBuilding(buildingName);
+    setSelectedService('Direct Contractor Engagement (Nearest Trade)');
+    setDefaultMode('choose_own');
+    setTargetContractor(null);
+    setQuoteModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50 text-neutral-900 flex flex-col antialiased pb-16 md:pb-0">
       {/* Top Header */}
@@ -67,7 +79,7 @@ export default function App() {
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Core Location Intelligence Card (Sub-goals 2 & 3: Live OneMap Data with Plain Words) */}
-        <OneMapCard />
+        <OneMapCard onNavigateToNearest={() => setActiveTab('nearest')} />
 
         {/* View switching based on active navigation tab or full page layout */}
         {activeTab === 'services' && (
@@ -76,6 +88,8 @@ export default function App() {
               onSelectService={handleSelectService}
               onOpenDirectChoose={handleOpenDirectChoose}
               onOpenRecommend={handleOpenRecommend}
+              onOpenQuoteWithContractor={handleOpenQuoteWithContractor}
+              onNavigateToNearest={() => setActiveTab('nearest')}
             />
             <BiddingSystem 
               onOpenNewQuote={() => setQuoteModalOpen(true)} 
@@ -85,6 +99,14 @@ export default function App() {
             />
             <MarketplaceSection />
           </>
+        )}
+
+        {activeTab === 'nearest' && (
+          <NearestContractorsTab 
+            onOpenQuoteWithContractor={handleOpenQuoteWithContractor}
+            onRequestQuoteWithPostal={handleRequestQuoteWithPostal}
+            initialPostal={userPostal}
+          />
         )}
 
         {activeTab === 'onemap' && (
@@ -138,8 +160,8 @@ export default function App() {
           setTargetContractor(null);
         }}
         defaultService={selectedService}
-        defaultPostal="178903"
-        defaultBuilding="SMU SCHOOL OF ECONOMICS / COMPUTING & INFORMATION SYSTEM 2"
+        defaultPostal={userPostal}
+        defaultBuilding={userBuilding}
         defaultMode={defaultMode}
         targetContractor={targetContractor}
       />

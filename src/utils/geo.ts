@@ -78,3 +78,83 @@ export const PRESET_HOME_LOCATIONS: HomeOwnerLocation[] = [
     lng: 103.9065,
   },
 ];
+
+/**
+ * Returns a fallback coordinate and town name for any Singapore 6-digit postal code
+ * based on the official Singapore postal sector (first 2 digits).
+ */
+export function getSectorFallbackLocation(postalCode: string): HomeOwnerLocation {
+  const clean = postalCode.replace(/\D/g, '').padStart(6, '0').slice(0, 6);
+  const sector = clean.slice(0, 2);
+  
+  let lat = 1.298;
+  let lng = 103.850;
+  let town = 'Central Singapore';
+
+  switch (sector) {
+    case '01': case '02': case '03': case '04': case '05': case '06':
+      lat = 1.280; lng = 103.850; town = 'Raffles Place / Marina Bay'; break;
+    case '07': case '08':
+      lat = 1.274; lng = 103.843; town = 'Tanjong Pagar / Anson'; break;
+    case '09': case '10':
+      lat = 1.271; lng = 103.815; town = 'Telok Blangah / Harbourfront'; break;
+    case '11': case '12': case '13':
+      lat = 1.299; lng = 103.764; town = 'Pasir Panjang / Clementi'; break;
+    case '14': case '15': case '16':
+      lat = 1.290; lng = 103.815; town = 'Queenstown / Tiong Bahru / Redhill'; break;
+    case '17': case '18': case '19':
+      lat = 1.298; lng = 103.852; town = 'High Street / Beach Road / Bugis'; break;
+    case '20': case '21':
+      lat = 1.310; lng = 103.855; town = 'Little India / Farrer Park'; break;
+    case '22': case '23':
+      lat = 1.302; lng = 103.835; town = 'Orchard / River Valley / Somerset'; break;
+    case '24': case '25': case '26': case '27':
+      lat = 1.310; lng = 103.805; town = 'Tanglin / Holland / Bukit Timah'; break;
+    case '28': case '29': case '30':
+      lat = 1.320; lng = 103.840; town = 'Novena / Thomson'; break;
+    case '31': case '32': case '33':
+      lat = 1.333; lng = 103.850; town = 'Toa Payoh / Balestier'; break;
+    case '34': case '35': case '36': case '37':
+      lat = 1.330; lng = 103.875; town = 'MacPherson / Potong Pasir / Aljunied'; break;
+    case '38': case '39': case '40': case '41':
+      lat = 1.325; lng = 103.895; town = 'Geylang / Eunos / Kaki Bukit / Ubi'; break;
+    case '42': case '43': case '44': case '45':
+      lat = 1.305; lng = 103.905; town = 'Katong / Marine Parade / East Coast'; break;
+    case '46': case '47': case '48':
+      lat = 1.322; lng = 103.935; town = 'Bedok / Chai Chee / Bayshore'; break;
+    case '49': case '50':
+      lat = 1.360; lng = 103.970; town = 'Loyang / Changi'; break;
+    case '51': case '52':
+      lat = 1.354; lng = 103.945; town = 'Pasir Ris / Tampines Town'; break;
+    case '53': case '54': case '55':
+      lat = 1.365; lng = 103.885; town = 'Hougang / Kovan / Sengkang / Serangoon'; break;
+    case '56': case '57':
+      lat = 1.360; lng = 103.850; town = 'Bishan / Ang Mo Kio'; break;
+    case '58': case '59':
+      lat = 1.355; lng = 103.765; town = 'Upper Bukit Timah / Hillview'; break;
+    case '60': case '61': case '62': case '63': case '64':
+      lat = 1.335; lng = 103.740; town = 'Jurong East / Jurong West / Boon Lay'; break;
+    case '65': case '66': case '67': case '68':
+      lat = 1.375; lng = 103.755; town = 'Bukit Batok / Bukit Panjang / Choa Chu Kang'; break;
+    case '69': case '70': case '71':
+      lat = 1.370; lng = 103.710; town = 'Tengah / Lim Chu Kang'; break;
+    case '72': case '73':
+      lat = 1.430; lng = 103.775; town = 'Woodlands / Kranji / Sungei Kadut'; break;
+    case '75': case '76':
+      lat = 1.440; lng = 103.830; town = 'Yishun / Sembawang'; break;
+    case '77': case '78':
+      lat = 1.390; lng = 103.825; town = 'Upper Thomson / Springleaf'; break;
+    case '79': case '80':
+      lat = 1.395; lng = 103.865; town = 'Seletar / Yio Chu Kang'; break;
+    case '81': case '82':
+      lat = 1.405; lng = 103.905; town = 'Punggol Waterway / Northshore'; break;
+  }
+
+  return {
+    postalCode: clean,
+    buildingName: `Residential Building (Postal ${clean})`,
+    address: `Postal ${clean}, Singapore (${town})`,
+    lat,
+    lng,
+  };
+}
