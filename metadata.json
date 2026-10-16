@@ -1,0 +1,6 @@
+{
+  "name": "HOMESTYLER - Home Improvement & Contractor Marketplace",
+  "description": "Engage contractors directly, request competitive renovation bids, consult interior designers, and explore home improvement products with verified OneMap location data.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
