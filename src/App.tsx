@@ -11,6 +11,7 @@ import { BiddingSystem } from './components/BiddingSystem';
 import { ContractorSection } from './components/ContractorSection';
 import { MarketplaceSection } from './components/MarketplaceSection';
 import { NearestContractorsTab } from './components/NearestContractorsTab';
+import { TalkToUsTab } from './components/TalkToUsTab';
 import { Footer } from './components/Footer';
 import { QuoteModal } from './components/QuoteModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
@@ -107,6 +108,10 @@ export default function App() {
             onRequestQuoteWithPostal={handleRequestQuoteWithPostal}
             initialPostal={userPostal}
           />
+        )}
+
+        {activeTab === 'talk-to-us' && (
+          <TalkToUsTab />
         )}
 
         {activeTab === 'onemap' && (
