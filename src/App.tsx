@@ -14,28 +14,40 @@ import { Footer } from './components/Footer';
 import { QuoteModal } from './components/QuoteModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { ShieldCheck, CheckCircle2, Sparkles, Building, Layers, ArrowRight } from 'lucide-react';
+import { Contractor } from './types';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('services');
   const [quoteModalOpen, setQuoteModalOpen] = useState<boolean>(false);
   const [selectedService, setSelectedService] = useState<string>('Full Home Renovation');
   const [defaultMode, setDefaultMode] = useState<'choose_own' | 'recommend' | 'general'>('general');
+  const [targetContractor, setTargetContractor] = useState<Contractor | null>(null);
 
   const handleSelectService = (serviceTitle: string) => {
     setSelectedService(serviceTitle);
     setDefaultMode('general');
+    setTargetContractor(null);
     setQuoteModalOpen(true);
   };
 
   const handleOpenDirectChoose = () => {
     setSelectedService('Direct Contractor Engagement');
     setDefaultMode('choose_own');
+    setTargetContractor(null);
     setQuoteModalOpen(true);
   };
 
   const handleOpenRecommend = () => {
     setSelectedService('Contractor Recommendation & Matching');
     setDefaultMode('recommend');
+    setTargetContractor(null);
+    setQuoteModalOpen(true);
+  };
+
+  const handleOpenQuoteWithContractor = (contractor: Contractor) => {
+    setTargetContractor(contractor);
+    setSelectedService(`Direct Engagement: ${contractor.companyName}`);
+    setDefaultMode('choose_own');
     setQuoteModalOpen(true);
   };
 
@@ -68,7 +80,9 @@ export default function App() {
             <BiddingSystem 
               onOpenNewQuote={() => setQuoteModalOpen(true)} 
             />
-            <ContractorSection />
+            <ContractorSection 
+              onOpenQuoteWithContractor={handleOpenQuoteWithContractor}
+            />
             <MarketplaceSection />
           </>
         )}
@@ -103,7 +117,9 @@ export default function App() {
         )}
 
         {activeTab === 'contractors' && (
-          <ContractorSection />
+          <ContractorSection 
+            onOpenQuoteWithContractor={handleOpenQuoteWithContractor}
+          />
         )}
 
         {activeTab === 'marketplace' && (
@@ -117,11 +133,15 @@ export default function App() {
       {/* Quote & Bidding Modal */}
       <QuoteModal
         isOpen={quoteModalOpen}
-        onClose={() => setQuoteModalOpen(false)}
+        onClose={() => {
+          setQuoteModalOpen(false);
+          setTargetContractor(null);
+        }}
         defaultService={selectedService}
         defaultPostal="178903"
         defaultBuilding="SMU SCHOOL OF ECONOMICS / COMPUTING & INFORMATION SYSTEM 2"
         defaultMode={defaultMode}
+        targetContractor={targetContractor}
       />
 
       {/* Phone Bottom Navigation */}

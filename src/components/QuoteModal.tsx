@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X, Sparkles, CheckCircle2, Building2, MapPin, DollarSign, Calendar, ShieldCheck } from 'lucide-react';
+import { X, Sparkles, CheckCircle2, Building2, MapPin, DollarSign, Calendar, ShieldCheck, Hammer } from 'lucide-react';
+import { Contractor } from '../types';
 
 interface QuoteModalProps {
   isOpen: boolean;
@@ -8,6 +9,7 @@ interface QuoteModalProps {
   defaultPostal?: string;
   defaultBuilding?: string;
   defaultMode?: 'choose_own' | 'recommend' | 'general';
+  targetContractor?: Contractor | null;
 }
 
 export const QuoteModal: React.FC<QuoteModalProps> = ({
@@ -17,10 +19,11 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
   defaultPostal = '178903',
   defaultBuilding = 'SMU SCHOOL OF ECONOMICS / COMPUTING',
   defaultMode = 'general',
+  targetContractor = null,
 }) => {
   const [propertyType, setPropertyType] = useState<'HDB' | 'Condominium' | 'Landed Property' | 'Commercial'>('Condominium');
   const [engagementMode, setEngagementMode] = useState<'choose_own' | 'recommend'>(
-    defaultMode === 'choose_own' ? 'choose_own' : 'recommend'
+    targetContractor ? 'choose_own' : (defaultMode === 'choose_own' ? 'choose_own' : 'recommend')
   );
   const [service, setService] = useState(defaultService);
   const [postal, setPostal] = useState(defaultPostal);
@@ -80,6 +83,23 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
             <p className="text-xs text-neutral-500 mb-4">
               Direct contractor engagement with verified Singapore Land Authority OneMap address details.
             </p>
+
+            {targetContractor && (
+              <div className="mb-4 p-3 bg-amber-50 border border-amber-300 rounded-xl flex items-center justify-between text-xs text-amber-950">
+                <div>
+                  <div className="font-bold flex items-center gap-1.5 text-neutral-900">
+                    <Hammer className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Direct Engagement with: {targetContractor.companyName}</span>
+                  </div>
+                  <div className="text-[11px] text-amber-800 mt-0.5">
+                    HDB Ref: {targetContractor.id} • {targetContractor.area} ({targetContractor.distanceKm?.toFixed(1)} km away)
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded">
+                  Direct Hire
+                </span>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
               {/* Engagement Path Selection (from Key Activities) */}

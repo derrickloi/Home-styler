@@ -45,3 +45,28 @@ export interface ProjectQuoteRequest {
   createdAt: string;
   bidsReceived: number;
 }
+
+export interface Contractor {
+  id: string;
+  uen: string;
+  companyName: string;
+  address: string;
+  postalCode: string;
+  email: string;
+  contactNo: string;
+  sector: string;
+  area: string;
+  region: 'Central' | 'North' | 'North-East' | 'East' | 'West' | 'South' | 'North-West';
+  lat: number;
+  lng: number;
+  distanceKm?: number;
+}
+
+export interface HomeOwnerLocation {
+  postalCode: string;
+  buildingName: string;
+  address: string;
+  lat: number;
+  lng: number;
+}
+
