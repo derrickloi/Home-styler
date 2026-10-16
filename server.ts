@@ -9,6 +9,16 @@ async function startServer() {
   const app = express();
   const PORT = process.env.PORT || 3000;
 
+  // Route /api/health to the health check handler
+  app.get('/api/health', async (req, res) => {
+    try {
+      const { default: handler } = await import('./api/health.ts');
+      await handler(req, res);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Health check error' });
+    }
+  });
+
   // Route any /api/* request to the OneMap API handler
   app.all('/api/*', async (req, res) => {
     try {

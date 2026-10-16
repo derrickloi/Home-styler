@@ -1,2 +1,2 @@
-import handler from "../../../../../onemap.js";
+import handler from './onemap.js';
 export default handler;

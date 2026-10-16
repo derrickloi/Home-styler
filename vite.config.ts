@@ -7,43 +7,41 @@ import { defineConfig, Plugin } from 'vite';
 const currentDir = import.meta.dirname ?? fileURLToPath(new URL('.', import.meta.url));
 
 function onemapApiPlugin(): Plugin {
+  const handleApi = async (req: any, res: any, next: any) => {
+    const rawUrl = req.url || '';
+    const decodedUrl = decodeURIComponent(rawUrl);
+    if (rawUrl.startsWith('/api') || decodedUrl.startsWith('/api')) {
+      if (rawUrl.startsWith('/api/health') || decodedUrl.startsWith('/api/health')) {
+        try {
+          const { default: handler } = await import('./api/health.ts');
+          return handler(req, res);
+        } catch (err: any) {
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ error: err.message || 'Health check error' }));
+          return;
+        }
+      }
+      try {
+        const { default: handler } = await import('./api/onemap.js');
+        return handler(req, res);
+      } catch (err: any) {
+        res.statusCode = 500;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ error: err.message || 'Internal server error' }));
+        return;
+      }
+    }
+    next();
+  };
+
   return {
     name: 'onemap-api-middleware',
     configureServer(server) {
-      server.middlewares.use(async (req, res, next) => {
-        const rawUrl = req.url || '';
-        const decodedUrl = decodeURIComponent(rawUrl);
-        if (rawUrl.startsWith('/api') || decodedUrl.startsWith('/api')) {
-          try {
-            const { default: handler } = await import('./api/onemap.js');
-            return handler(req, res);
-          } catch (err: any) {
-            res.statusCode = 500;
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify({ error: err.message || 'Internal server error' }));
-            return;
-          }
-        }
-        next();
-      });
+      server.middlewares.use(handleApi);
     },
     configurePreviewServer(server) {
-      server.middlewares.use(async (req, res, next) => {
-        const rawUrl = req.url || '';
-        const decodedUrl = decodeURIComponent(rawUrl);
-        if (rawUrl.startsWith('/api') || decodedUrl.startsWith('/api')) {
-          try {
-            const { default: handler } = await import('./api/onemap.js');
-            return handler(req, res);
-          } catch (err: any) {
-            res.statusCode = 500;
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify({ error: err.message || 'Internal server error' }));
-            return;
-          }
-        }
-        next();
-      });
+      server.middlewares.use(handleApi);
     },
   };
 }

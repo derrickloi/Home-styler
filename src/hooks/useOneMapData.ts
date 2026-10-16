@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { OneMapAddressItem, OneMapApiResponse, OneMapStatus } from '../types';
 
-export const EXACT_ONEMAP_ENDPOINT = '/api/GET https://www.onemap.gov.sg/api/common/elastic/search?searchVal=178903&returnGeom=Y&getAddrDetails=Y&pageNum=1';
+export const EXACT_ONEMAP_ENDPOINT = '/api/onemap';
 
 export interface UseOneMapReturn {
   status: OneMapStatus;
