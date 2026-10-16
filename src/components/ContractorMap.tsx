@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { Contractor, HomeOwnerLocation } from '../types';
 import { formatDistance } from '../utils/geo';
-import { MapPin, Navigation, Compass, Layers, Phone, Mail, Sparkles, Building2 } from 'lucide-react';
+import { MapPin, Navigation, Compass, Phone, Mail, Sparkles } from 'lucide-react';
 
 interface ContractorMapProps {
   homeLocation: HomeOwnerLocation;
@@ -42,11 +42,10 @@ export const ContractorMap: React.FC<ContractorMapProps> = ({
       scrollWheelZoom: true,
     });
 
-    // High quality OpenStreetMap / CartoDB Voyager tiles (clean, beautiful for Singapore)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    // High reliability OpenStreetMap standard tile layer (keyless, fast, no external token needed)
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a> | Data: One Map &amp; data.gov.sg',
-      subdomains: 'abcd',
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Data: One Map &amp; data.gov.sg',
       maxZoom: 19,
     }).addTo(map);
 
@@ -54,9 +53,33 @@ export const ContractorMap: React.FC<ContractorMapProps> = ({
     radiusCirclesRef.current = L.layerGroup().addTo(map);
     mapInstanceRef.current = map;
 
+    // Trigger invalidateSize to ensure tiles render immediately upon mount
+    map.invalidateSize();
+    const t1 = setTimeout(() => map.invalidateSize(), 150);
+    const t2 = setTimeout(() => map.invalidateSize(), 500);
+
     return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
       map.remove();
       mapInstanceRef.current = null;
+    };
+  }, []);
+
+  // ResizeObserver to automatically call invalidateSize when container dimensions change (e.g. tab switches!)
+  useEffect(() => {
+    if (!mapContainerRef.current) return;
+
+    const ro = new ResizeObserver(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    });
+
+    ro.observe(mapContainerRef.current);
+
+    return () => {
+      ro.disconnect();
     };
   }, []);
 
@@ -64,6 +87,8 @@ export const ContractorMap: React.FC<ContractorMapProps> = ({
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
+
+    map.invalidateSize();
 
     // Update Home Marker
     if (homeMarkerRef.current) {
@@ -94,7 +119,7 @@ export const ContractorMap: React.FC<ContractorMapProps> = ({
       .bindPopup(`
         <div class="p-3 text-xs">
           <div class="inline-block px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-bold uppercase text-[10px] mb-1">
-            Homeowner Location
+            Homeowner Reference Location
           </div>
           <div class="font-bold text-sm text-neutral-900">${homeLocation.buildingName}</div>
           <div class="text-neutral-500 mt-0.5">${homeLocation.address}</div>
@@ -149,7 +174,7 @@ export const ContractorMap: React.FC<ContractorMapProps> = ({
 
     markersLayer.clearLayers();
 
-    // Limit rendered map markers to top 150 closest or filtered to keep map ultra fast
+    // Render top 150 closest or filtered contractors
     const visibleContractors = contractors.slice(0, 150);
 
     visibleContractors.forEach((contractor) => {
@@ -222,7 +247,6 @@ export const ContractorMap: React.FC<ContractorMapProps> = ({
 
       marker.addTo(markersLayer);
 
-      // If this is currently the selected contractor, open popup and pan to it
       if (isSelected) {
         marker.openPopup();
       }
@@ -242,6 +266,7 @@ export const ContractorMap: React.FC<ContractorMapProps> = ({
   const recenterHome = () => {
     const map = mapInstanceRef.current;
     if (!map) return;
+    map.invalidateSize();
     map.flyTo([homeLocation.lat, homeLocation.lng], 12, { duration: 0.6 });
     if (homeMarkerRef.current) {
       homeMarkerRef.current.openPopup();
@@ -250,14 +275,18 @@ export const ContractorMap: React.FC<ContractorMapProps> = ({
 
   return (
     <div className="relative rounded-2xl overflow-hidden border border-neutral-200 bg-neutral-100 shadow-sm">
-      {/* Map Canvas */}
-      <div ref={mapContainerRef} className="w-full h-[400px] sm:h-[480px] lg:h-[520px] z-10" />
+      {/* Map Canvas with guaranteed min-height and clear dimensions */}
+      <div 
+        ref={mapContainerRef} 
+        className="w-full h-[420px] sm:h-[480px] lg:h-[520px] z-10 block" 
+        style={{ minHeight: '420px' }}
+      />
 
       {/* Floating Map Controls & Legends */}
       <div className="absolute top-3 right-3 z-20 flex flex-col gap-2">
         <button
           onClick={recenterHome}
-          className="bg-white/95 backdrop-blur-sm p-2 rounded-xl border border-neutral-200 shadow-md text-neutral-800 hover:text-neutral-950 hover:bg-white active:scale-95 transition-all text-xs font-bold flex items-center gap-1.5"
+          className="bg-white/95 backdrop-blur-sm p-2 rounded-xl border border-neutral-200 shadow-md text-neutral-800 hover:text-neutral-950 hover:bg-white active:scale-95 transition-all text-xs font-bold flex items-center gap-1.5 cursor-pointer"
           title="Recenter map on Homeowner location"
         >
           <Navigation className="w-4 h-4 text-amber-500 fill-amber-500" />
@@ -266,14 +295,14 @@ export const ContractorMap: React.FC<ContractorMapProps> = ({
       </div>
 
       {/* Proximity Distance Legend */}
-      <div className="absolute bottom-3 left-3 z-20 bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl border border-neutral-200/90 shadow-md text-xs">
+      <div className="absolute bottom-3 left-3 z-20 bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl border border-neutral-200/90 shadow-md text-xs pointer-events-none">
         <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-1 flex items-center gap-1">
           <Compass className="w-3.5 h-3.5 text-neutral-600" />
-          Proximity Rings from Home
+          Proximity from OneMap Home (178903)
         </div>
         <div className="flex items-center gap-3 text-[11px] font-medium text-neutral-700">
           <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> &lt; 3 km (Nearest)
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> &lt; 3 km
           </span>
           <span className="flex items-center gap-1">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 3 - 6 km
