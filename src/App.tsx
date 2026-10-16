@@ -14,6 +14,7 @@ import { MarketplaceSection } from './components/MarketplaceSection';
 import { Footer } from './components/Footer';
 import { QuoteModal } from './components/QuoteModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
+import { TalkToUsTab } from './components/TalkToUsTab';
 import { ShieldCheck, CheckCircle2, Sparkles, Building, Layers, ArrowRight } from 'lucide-react';
 import { Contractor } from './types';
 
@@ -105,6 +106,10 @@ export default function App() {
           <BiddingSystem 
             onOpenNewQuote={() => setQuoteModalOpen(true)} 
           />
+        )}
+
+        {activeTab === 'talk-to-us' && (
+          <TalkToUsTab />
         )}
 
         {activeTab === 'onemap' && (
